@@ -29,8 +29,8 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/typeorm.config.ts ./
-COPY --from=builder /app/src/migrations ./src/migrations
+# COPY --from=builder /app/typeorm.config.ts ./
+# COPY --from=builder /app/src/migrations ./src/migrations
 
 # 安装生产依赖 + typeorm (用于运行 migrations)
 RUN pnpm install --prod --frozen-lockfile && pnpm add typeorm ts-node
