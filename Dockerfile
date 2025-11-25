@@ -1,5 +1,5 @@
 # 构建阶段
-FROM docker.m.daocloud.io/library/node:18-alpine AS Builder
+FROM docker.m.daocloud.io/library/node:18-alpine AS builder
 
 WORKDIR /app
 
