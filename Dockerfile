@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:18-alpine AS builder
+FROM hub.c.163.com/library/node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN pnpm run build
 
 # 运行阶段
-FROM node:18-alpine
+FROM hub.c.163.com/library/node:18-alpine
 
 WORKDIR /app
 
