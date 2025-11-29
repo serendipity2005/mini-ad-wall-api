@@ -8,23 +8,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          version: "10.23.0" # 替换为你本地 pnpm 版本（pnpm -v 查看）
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+
       - name: Install dependencies
-        run: npm ci
-      
+        run: pnpm install
+
       - name: Build project
-        run: npm run build
-      
+        run: pnpm run build
+
       - name: Deploy to server
         uses: appleboy/scp-action@master
         with:
@@ -35,7 +41,7 @@ jobs:
           target: "/var/www/mini-ad-wall"
           strip_components: 1
           rm: true
-      
+
       - name: Restart Nginx
         uses: appleboy/ssh-action@master
         with:
