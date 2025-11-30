@@ -119,131 +119,87 @@ export class AdsService {
     return updatedAd;
   }
   getFormConfig(): FormFieldConfig[] {
-    // return {
-    //   title: '广告信息',
-    //   description: '请填写广告相关信息',
-    //   fields: [
-    //     {
-    //       field: 'title',
-    //       name: '广告标题',
-    //       component: FormComponentType.Input,
-    //       placeholder: '请输入广告标题',
-    //       validator: {
-    //         required: true,
-    //         maxCount: 100,
-    //         message: '标题不能超过100个字符',
-    //       },
-    //       tooltip: '广告的主标题，将显示在广告墙上',
-    //     },
-    //     {
-    //       field: 'author',
-    //       name: '发布人',
-    //       component: FormComponentType.Input,
-    //       placeholder: '请输入发布人姓名',
-    //       validator: {
-    //         required: true,
-    //         maxCount: 50,
-    //         message: '发布人名称不能超过50个字符',
-    //       },
-    //     },
-    //     {
-    //       field: 'content',
-    //       name: '广告内容',
-    //       component: FormComponentType.TextArea,
-    //       placeholder: '请输入广告详细内容',
-    //       validator: {
-    //         required: true,
-    //         maxCount: 500,
-    //         message: '内容不能超过500个字符',
-    //       },
-    //       componentProps: {
-    //         rows: 4,
-    //         showCount: true,
-    //       },
-    //     },
-    //     {
-    //       field: 'imageUrl',
-    //       name: '广告图片',
-    //       component: FormComponentType.Input,
-    //       placeholder: '请输入图片URL',
-    //       validator: {
-    //         url: true,
-    //         message: '请输入有效的图片URL',
-    //       },
-    //       tooltip: '可选，广告展示图片',
-    //     },
-    //     {
-    //       field: 'landingUrl',
-    //       name: '落地页链接',
-    //       component: FormComponentType.Input,
-    //       placeholder: '请输入落地页URL',
-    //       validator: {
-    //         required: true,
-    //         url: true,
-    //         message: '请输入有效的URL地址',
-    //       },
-    //       tooltip: '用户点击广告后跳转的目标页面',
-    //     },
-    //     {
-    //       field: 'bid',
-    //       name: '出价',
-    //       component: FormComponentType.InputNumber,
-    //       placeholder: '请输入出价金额',
-    //       validator: {
-    //         required: true,
-    //         number: true,
-    //         min: 0,
-    //         message: '出价必须大于等于0',
-    //       },
-    //       defaultValue: 0,
-    //       componentProps: {
-    //         min: 0,
-    //         precision: 2,
-    //         step: 0.01,
-    //         addonAfter: '元',
-    //       },
-    //       tooltip: '出价越高，广告排名越靠前',
-    //     },
-    //   ],
-    // };
-
     return [
       {
         field: 'title',
         name: '广告标题',
         component: FormComponentType.Input,
+        placeholder: '请输入广告标题',
         validator: {
-          maxCount: 30,
+          required: true,
+          maxCount: 100,
+          message: '标题不能超过100个字符',
         },
+        tooltip: '广告的主标题，将显示在广告墙上',
       },
       {
         field: 'author',
         name: '发布人',
         component: FormComponentType.Input,
+        placeholder: '请输入发布人姓名',
         validator: {
-          maxCount: 10,
+          required: true,
+          maxCount: 50,
+          message: '发布人名称不能超过50个字符',
         },
       },
       {
         field: 'content',
-        name: '内容文案',
+        name: '广告内容',
         component: FormComponentType.TextArea,
+        placeholder: '请输入广告详细内容',
+        validator: {
+          required: true,
+          maxCount: 500,
+          message: '内容不能超过500个字符',
+        },
+        componentProps: {
+          rows: 4,
+          showCount: true,
+        },
       },
+      // {
+      //   field: 'imageUrl',
+      //   name: '广告图片',
+      //   component: FormComponentType.Input,
+      //   placeholder: '请输入图片URL',
+      //   validator: {
+      //     url: true,
+      //     message: '请输入有效的图片URL',
+      //   },
+      //   tooltip: '可选，广告展示图片',
+      // },
       {
-        field: 'url',
+        field: 'landingUrl',
         name: '落地页链接',
         component: FormComponentType.Input,
+        placeholder: '请输入落地页URL',
         validator: {
+          required: true,
           url: true,
+          message: '请输入有效的URL地址',
         },
+        tooltip: '用户点击广告后跳转的目标页面',
       },
       {
-        field: 'price',
+        field: 'bid',
         name: '出价',
-        component: FormComponentType.Input,
+        component: FormComponentType.InputNumber,
+        placeholder: '请输入出价金额',
         validator: {
+          required: true,
           number: true,
+          min: 0,
+          message: '出价必须大于等于0',
         },
+        defaultValue: 0,
+        componentProps: {
+          min: 0,
+          precision: 2,
+          step: 0.01,
+          addonAfter: '元',
+        },
+        tooltip: '出价越高，广告排名越靠前',
       },
     ];
   }
