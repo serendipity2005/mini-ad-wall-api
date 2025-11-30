@@ -83,7 +83,7 @@ const handleSubmit = async (form: AdForm) => {
   const res = await AdAPI.createAd(form)
   getAds()
   ElMessage.success('成功提交')
-  clearForm(form)
+  clearForm()
 }
 // 获取广告列表
 const getAds = async () => {
