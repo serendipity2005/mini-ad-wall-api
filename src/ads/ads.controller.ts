@@ -2,11 +2,10 @@
  * @Author: serendipity 2843306836@qq.com
  * @Date: 2025-11-23 21:13:49
  * @LastEditors: serendipity 2843306836@qq.com
- * @LastEditTime: 2025-11-24 20:03:17
+ * @LastEditTime: 2025-11-30 18:12:19
  * @FilePath: \mini-ad-wall-api\src\ads\ads.controller.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-
 import {
   Body,
   Controller,
@@ -22,6 +21,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { Ad } from './entities/ad.entity';
+import { FormConfigResponse } from './dto/form-config.dto';
 @Controller('ads')
 @ApiTags('广告墙管理')
 export class AdsController {
@@ -45,6 +45,7 @@ export class AdsController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '更新广告', description: '创建一个新的广告' })
   async update(@Param('id') id: string, @Body() dto: UpdateAdDto): Promise<Ad> {
     return this.adsService.update(id, dto);
   }
@@ -57,8 +58,22 @@ export class AdsController {
   }
 
   @Post('click/:id')
-  @ApiOperation({summary:'点击广告'})
+  @ApiOperation({ summary: '点击广告' })
   async click(@Param('id') id: string): Promise<Ad> {
     return this.adsService.click(id);
+  }
+
+  @Get('form-config')
+  @ApiOperation({
+    summary: '获取表单配置',
+    description: '返回创建/编辑广告的表单配置信息，用于前端动态渲染表单',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '成功返回表单配置',
+    type: FormConfigResponse,
+  })
+  getFormConfig(): FormConfigResponse {
+    return this.adsService.getFormConfig();
   }
 }
