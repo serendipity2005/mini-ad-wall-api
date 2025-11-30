@@ -213,7 +213,7 @@ export class AdsService {
         name: '广告标题',
         component: FormComponentType.Input,
         validator: {
-          maxCount: 10,
+          maxCount: 30,
         },
       },
       {
@@ -223,6 +223,11 @@ export class AdsService {
         validator: {
           maxCount: 10,
         },
+      },
+      {
+        field: 'content',
+        name: '内容文案',
+        component: FormComponentType.TextArea,
       },
       {
         field: 'url',
