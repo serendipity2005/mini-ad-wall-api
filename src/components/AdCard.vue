@@ -25,8 +25,10 @@
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item @click.stop="emit('edit', props.ad)">编辑广告</el-dropdown-item>
+
           <el-dropdown-item @click.stop="emit('copy', props.ad)">复制广告</el-dropdown-item>
-          <el-dropdown-item @click.stop="emit('delete')">删除广告</el-dropdown-item>
+
+          <el-dropdown-item @click.stop="handleDelete">删除广告</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -46,7 +48,8 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import {type Ad} from "@/types/ad.ts" 
+import { type Ad } from '@/types/ad.ts'
+import { ElMessage, ElMessageBox } from 'element-plus'
 const props = defineProps<{
   clicks: number
   content: string
@@ -56,6 +59,27 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['edit', 'copy', 'delete', 'clickCard'])
+const handleDelete = () => {
+  ElMessageBox.confirm('确定要删除吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    center: true,
+  }).then(async () => {
+    try {
+      emit('delete', props.ad)
+      ElMessage({
+        type: 'success',
+        message: '删除成功',
+      })
+    } catch (error) {
+      ElMessage({
+        type: 'error',
+        message: '删除失败',
+      })
+    }
+  })
+}
 </script>
 
 <style scoped lang="scss"></style>

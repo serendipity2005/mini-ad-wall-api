@@ -6,7 +6,7 @@
     width="600px"
     @close="handleClose"
   >
-    <el-form ref="formRef" :rules="formRules" :model="form" label-width="100px" class="mt-4">
+    <!-- <el-form ref="formRef" :rules="formRules" :model="form" label-width="100px" class="mt-4">
       <el-form-item prop="title" label="广告标题" required>
         <el-input v-model="form.title" />
       </el-form-item>
@@ -32,7 +32,16 @@
           <span>元</span>
         </div>
       </el-form-item>
-    </el-form>
+    </el-form> -->
+
+    <DynamicForm
+      v-if="formConfig.length > 0"
+      ref="formRef"
+      :form-config="formConfig"
+      :form="form"
+    />
+    <div v-else class="text-center py-8 text-gray-400">加载表单配置中...</div>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
@@ -45,12 +54,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { type AdForm } from '../types/ad'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import type { FormConfig } from '@/types/formConfig'
 const formRef = ref<FormInstance>()
+
 const props = withDefaults(
   defineProps<{
+    formConfig: FormConfig
     form: AdForm
     modelValue: boolean
     title?: string
@@ -66,47 +78,54 @@ const emit = defineEmits<{
   (e: 'submit', form: AdForm): void
   (e: 'update:modelValue', value: boolean): void
 }>()
-const formRules: FormRules = {
-  title: [
-    { required: true, message: '请输入广告标题', trigger: 'blur' },
-    { min: 2, max: 50, message: '标题长度在 2 到 50 个字符', trigger: 'blur' },
-  ],
-  author: [{ required: true, message: '请输入作者名称', trigger: 'blur' }],
-  content: [
-    { required: true, message: '请输入广告内容', trigger: 'blur' },
-    { min: 10, max: 500, message: '内容长度在 10 到 500 个字符', trigger: 'blur' },
-  ],
-  landingUrl: [
-    { required: true, message: '请输入跳转链接', trigger: 'blur' },
-    { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' },
-  ],
-  bid: [
-    { required: true, message: '请输入出价', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '出价必须大于0', trigger: 'blur' },
-  ],
-}
+// const formRules: FormRules = {
+//   title: [
+//     { required: true, message: '请输入广告标题', trigger: 'blur' },
+//     { min: 2, max: 50, message: '标题长度在 2 到 50 个字符', trigger: 'blur' },
+//   ],
+//   author: [{ required: true, message: '请输入作者名称', trigger: 'blur' }],
+//   content: [
+//     { required: true, message: '请输入广告内容', trigger: 'blur' },
+//     { min: 10, max: 500, message: '内容长度在 10 到 500 个字符', trigger: 'blur' },
+//   ],
+//   landingUrl: [
+//     { required: true, message: '请输入跳转链接', trigger: 'blur' },
+//     { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' },
+//   ],
+//   bid: [
+//     { required: true, message: '请输入出价', trigger: 'blur' },
+//     { type: 'number', min: 0.01, message: '出价必须大于0', trigger: 'blur' },
+//   ],
+// }
 // 3. 处理关闭逻辑
 const handleClose = () => {
   formRef.value?.resetFields()
   emit('update:modelValue', false)
   emit('cancel')
 }
+
 const handleSubmit = async () => {
+  console.log('提交表单', formRef.value)
   if (!formRef.value) {
     return
   }
 
-  await formRef.value.validate((valid:boolean) => {
-    console.log('yanzhneg', valid)
+  const isValid = await formRef.value.validate()
 
-    if (valid) {
-      emit('submit', props.form)
-      emit('update:modelValue', false)
-    } else {
-      ElMessage.error('请完善表单信息后提交');
-    }
-  })
+  if (isValid) {
+    emit('submit', props.form)
+    emit('update:modelValue', false)
+  } else {
+    ElMessage.error('请完善表单信息后提交')
+  }
 }
+
+watch(
+  () => props.formConfig,
+  (newVal) => {
+    console.log('表单新配置', newVal)
+  },
+)
 </script>
 
 <style scoped></style>

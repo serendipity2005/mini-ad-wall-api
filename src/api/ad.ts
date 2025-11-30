@@ -27,6 +27,10 @@ const AdAPI = {
   clickAd: (id: number) => {
     return post(`/ads/click/${id}`)
   },
+
+  fetchFormConfig: () => {
+    return get('/ads/form-config')
+  },
 }
 
 export default AdAPI

@@ -1,17 +1,11 @@
-<!--
- * @Author: serendipity 2843306836@qq.com
- * @Date: 2025-11-26 20:43:11
- * @LastEditors: serendipity 2843306836@qq.com
- * @LastEditTime: 2025-11-29 11:48:06
- * @FilePath: \mini-ad-wall-web\src\App.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 <script setup lang="ts">
 import { ref, reactive, onMounted, type Ref } from 'vue'
 import AdCard from '@/components/AdCard.vue'
 import AdDialog from '@/components/AdDialog.vue'
 import AdAPI from './api/ad'
 import type { AdForm } from './types/ad'
+import { ElMessage } from 'element-plus'
+import type { FormFieldConfig } from './types/formConfig'
 
 export interface Ad {
   id: number
@@ -27,33 +21,69 @@ const ads = ref<Ad[]>([])
 const isEdit = ref<boolean>(false)
 
 const dialogVisible = ref(false)
-const handleVisible = (isVisble: boolean) => {
-  dialogVisible.value = isVisble
-}
-const form = reactive({
+const formConfig = ref<FormFieldConfig[]>([])
+let form = reactive({
   title: '',
   author: '',
   content: '',
   landingUrl: '',
   bid: 0.0,
 })
+// 获取表单配置
+const getFormConfig = async () => {
+  try {
+    const res = await AdAPI.fetchFormConfig()
+    console.log('获取表单配置成功', res.data)
+    formConfig.value = res.data
+  } catch (error) {
+    ElMessage.error('获取表单配置失败')
+    console.error(error)
+  }
+}
+const handleVisible = (isVisble: boolean) => {
+  dialogVisible.value = isVisble
+}
 
-const handleCreate = async (form: AdForm) => {
-  dialogVisible.value = false
-  console.log('点击创建', form)
-  const res = await AdAPI.createAd(form)
-  getAds()
-  console.log(res)
+const handleCreate = async () => {
+  dialogVisible.value = true
+  isEdit.value = false
+  await getFormConfig()
+}
+
+// 清空表单数据
+// const clearForm = () => {
+//   Object.assign(form, {
+//     title: '',
+//     author: '',
+//     content: '',
+//     landingUrl: '',
+//     bid: 0.0,
+//   })
+// }
+const clearForm = () => {
+  const keys = Object.keys(form) as Array<keyof typeof form>
+  keys.forEach((key) => {
+    delete form[key]
+  })
+}
+
+const fiilForm = (ad: Ad) => {
+  clearForm()
+  Object.assign(form, {
+    title: ad.title,
+    author: ad.author,
+    content: ad.content,
+    bid: Number(ad.bid),
+    landingUrl: ad.landingUrl,
+  })
 }
 const handleSubmit = async (form: AdForm) => {
-  await handleCreate(form)
-  Object.assign(form, {
-    title: '',
-    author: '',
-    content: '',
-    landingUrl: '',
-    bid: 0.0,
-  })
+  dialogVisible.value = false
+  isEdit.value = false
+  const res = await AdAPI.createAd(form)
+  getAds()
+  ElMessage.success('成功提交')
+  clearForm(form)
 }
 // 获取广告列表
 const getAds = async () => {
@@ -68,33 +98,25 @@ const handleDelete = async (id: number) => {
 }
 const handleEdit = async (ad: Ad) => {
   isEdit.value = true
+  await getFormConfig()
   handleVisible(true)
-  // 直接使用传递过来的 ad 对象填充表单
-  Object.assign(form, {
-    title: ad.title,
-    author: ad.author,
-    content: ad.content,
-    bid: ad.bid,
-  })
+  fiilForm(ad)
 }
 const handleCopy = async (ad: Ad) => {
   isEdit.value = false
   // 复制数据到表单（不包含 id）
-  Object.assign(form, {
-    title: ad.title,
-    author: ad.author,
-    content: ad.content,
-    bid: ad.bid,
-    landingUrl: ad.landingUrl,
-  })
+  console.log(ad, 'ad')
+  await getFormConfig()
+
+  fiilForm(ad)
   dialogVisible.value = true
 }
 const handleClick = async (ad: Ad) => {
-  console.log('点击卡片', ad)
   await AdAPI.clickAd(ad.id)
   await getAds()
   window.open(ad.landingUrl, '_blank')
 }
+
 onMounted(async () => {
   await getAds()
 })
@@ -112,7 +134,7 @@ onMounted(async () => {
       <!-- Action Bar -->
       <div class="mb-6">
         <button
-          @click="dialogVisible = true"
+          @click="handleCreate"
           class="bg-[#3B82F6] hover:bg-blue-600 text-white px-4 py-2 rounded-sm flex items-center gap-1 text-sm transition-colors cursor-pointer shadow-sm"
         >
           <svg
@@ -155,7 +177,13 @@ onMounted(async () => {
       </div>
 
       <!-- Create Ad Dialog -->
-      <AdDialog :is-edit="isEdit" :form="form" v-model="dialogVisible" @submit="handleSubmit" />
+      <AdDialog
+        :form-config="formConfig"
+        :is-edit="isEdit"
+        :form="form"
+        v-model="dialogVisible"
+        @submit="handleSubmit"
+      />
     </main>
   </div>
 </template>
