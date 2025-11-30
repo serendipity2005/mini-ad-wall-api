@@ -68,11 +68,11 @@ export class FormFieldConfig {
 }
 
 export class FormConfigResponse {
-  @ApiProperty({ description: '表单标题' })
-  title: string;
+  //   @ApiProperty({ description: '表单标题' })
+  //   title: string;
 
-  @ApiProperty({ description: '表单描述' })
-  description?: string;
+  //   @ApiProperty({ description: '表单描述' })
+  //   description?: string;
 
   @ApiProperty({ description: '表单字段配置列表', type: [FormFieldConfig] })
   fields: FormFieldConfig[];
