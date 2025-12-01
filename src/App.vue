@@ -47,6 +47,7 @@ const handleVisible = (isVisble: boolean) => {
 const handleCreate = async () => {
   dialogVisible.value = true
   isEdit.value = false
+  clearForm() // 先清空
   await getFormConfig()
 }
 
@@ -60,14 +61,18 @@ const handleCreate = async () => {
 //     bid: 0.0,
 //   })
 // }
+
 const clearForm = () => {
-  const keys = Object.keys(form) as Array<keyof typeof form>
-  keys.forEach((key) => {
-    delete form[key]
+  Object.assign(form, {
+    title: '',
+    author: '',
+    content: '',
+    landingUrl: '',
+    bid: 0.0,
   })
 }
 
-const fiilForm = (ad: Ad) => {
+const fillForm = (ad: Ad) => {
   clearForm()
   Object.assign(form, {
     title: ad.title,
@@ -100,7 +105,7 @@ const handleEdit = async (ad: Ad) => {
   isEdit.value = true
   await getFormConfig()
   handleVisible(true)
-  fiilForm(ad)
+  fillForm(ad)
 }
 const handleCopy = async (ad: Ad) => {
   isEdit.value = false
@@ -108,7 +113,7 @@ const handleCopy = async (ad: Ad) => {
   console.log(ad, 'ad')
   await getFormConfig()
 
-  fiilForm(ad)
+  fillForm(ad)
   dialogVisible.value = true
 }
 const handleClick = async (ad: Ad) => {

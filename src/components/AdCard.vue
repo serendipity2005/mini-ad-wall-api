@@ -1,3 +1,11 @@
+<!--
+ * @Author: serendipity 2843306836@qq.com
+ * @Date: 2025-11-26 21:57:22
+ * @LastEditors: serendipity 2843306836@qq.com
+ * @LastEditTime: 2025-12-01 19:57:17
+ * @FilePath: \mini-ad-wall-web\src\components\AdCard.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
   <!-- Card Header -->
   <div class="flex justify-between items-start mb-4" @click="emit('clickCard', props.ad)">
@@ -64,7 +72,6 @@ const handleDelete = () => {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
-    center: true,
   }).then(async () => {
     try {
       emit('delete', props.ad)
