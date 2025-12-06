@@ -1,252 +1,156 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+# Mini Ad Wall API
+
+基于 NestJS + TypeORM 的广告墙后端服务，提供广告的增删改查、点击统计以及表单配置接口。
+
+## 技术栈
+
+- **Framework**：NestJS
+- **Database ORM**：TypeORM
+- **Database**：MySQL
+- **Validation**：class-validator / class-transformer
+- **Logging**：winston / nest-winston
+- **API 文档**：@nestjs/swagger + swagger-ui-express
+
+---
+
+## 快速启动
+
+### 1. 安装依赖
+
+```bash
+pnpm install
+# 或
+npm install
+# 或
+yarn install
+```
+
+### 2. 配置环境变量
+
+项目根目录已有示例文件：
+
+- [.env.development](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/.env.development:0:0-0:0)
+- [.env.production](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/.env.production:0:0-0:0)
+
+你可以复制一份为 [.env](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/.env:0:0-0:0)，并根据实际情况修改数据库等配置，例如：
+
+```env
+NODE_ENV=development
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=your_password
+DB_DATABASE=mini_ad_wall
+```
+
+### 3. 数据库迁移
+
+先编译，再执行迁移（使用 TypeORM）：
+
+```bash
+pnpm build
+pnpm migration:run
+```
+
+或使用 npm：
+
+```bash
+npm run build
+npm run migration:run
+```
+
+### 4. 启动服务
+
+开发环境热更新：
+
+```bash
+pnpm start:dev
+# 或
+npm run start:dev
+```
+
+生产编译 + 启动：
+
+```bash
+pnpm build
+pnpm start:prod
+# 或
+npm run build
+npm run start:prod
+```
+
+默认监听端口：`http://localhost:3000`（可通过 `PORT` 环境变量修改）
+
+---
+
+## Swagger API 文档
+
+在应用中通过 `SwaggerModule` 挂载了文档：
+
+```ts
+SwaggerModule.setup('swagger', app, document);
+```
+
+因此服务启动后，可以通过以下地址访问 Swagger UI：
+
+- 本地默认地址：
+  **http://localhost:3000/swagger**
+
+如果你在 [.env](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/.env:0:0-0:0) 中修改了 `PORT`，请把上述链接中的端口改成对应值。
+
+---
+
+## 核心功能说明
+
+### 广告管理（Ads）
+
+控制器：`src/ads/ads.controller.ts`
+
+主要接口示例（路径以 `/ads` 开头）：
+
+- **GET** `/ads`查询广告列表（按竞价 `bid` 降序）
+- **POST** `/ads/create`创建广告（请求体为 `CreateAdDto`）
+- **PATCH** `/ads/:id`更新指定 ID 的广告（请求体为 `UpdateAdDto`）
+- **DELETE** `/ads/delete/:id`删除广告
+- **POST** `/ads/click/:id`记录广告点击
+- **GET** `/ads/form-config`
+  获取创建/编辑广告的表单配置（用于前端动态渲染表单）
+
+所有接口均通过 Swagger 注解（`@ApiTags` / `@ApiOperation` / `@ApiResponse` 等）自动出现在 Swagger 文档中。
+
+---
+
+## 全局能力
+
+在 `src/main.ts` 中配置了：
+
+- **全局异常过滤器**：`AllExceptionFilter`
+- **全局响应拦截器**：`TransformInterceptors`
+- **全局参数校验管道**：`ValidationPipe`（自动类型转换、白名单校验）
+
+---
+
+## 脚本命令一览
+
+在 [package.json](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/package.json:0:0-0:0) 中可以使用的常用脚本：
+
+```bash
+pnpm start        # 普通启动
+pnpm start:dev    # 开发模式热更新
+pnpm start:prod   # dist 编译后启动
+pnpm build        # 编译 TypeScript
+pnpm test         # 单元测试
+pnpm test:e2e     # e2e 测试
+pnpm lint         # 代码检查与修复
+pnpm migration:generate # 生成数据库迁移
+pnpm migration:run      # 执行迁移
+pnpm migration:revert   # 回滚迁移
+```
+
+---
+
+如果你希望 README 也包含 Docker / docker-compose 的使用说明，我可以再基于项目里的 [Dockerfile](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/Dockerfile:0:0-0:0) 和 [docker-compose.yml](cci:7://file:///e:/Mini-Ad-Wall/mini-ad-wall-api/docker-compose.yml:0:0-0:0) 给你补一节「使用 Docker 部署」。`<p align="center">`
+  `<a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />``</a>`
+
 </p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-Mini Ad Wall API - 基于 NestJS 的广告墙后端服务，支持广告的创建、编辑、删除、列表查询和点击统计。
-
-## Features
-
-- ✅ 创建广告接口
-- ✅ 编辑广告接口
-- ✅ 删除广告接口
-- ✅ 查询广告列表接口（按竞价排名）
-- ✅ 点击广告次数+1接口
-- ✅ CORS 跨域支持
-- ✅ 基于文件的数据持久化（`data/ads.json`）
-
-## Project setup
-
-```bash
-$ pnpm install
-```
-
-## Configuration
-
-创建 `.env` 文件配置端口（可选）：
-
-```bash
-PORT=3001
-```
-
-如果不配置，默认使用 3000 端口。
-
-## Compile and run the project
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode (推荐开发使用)
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
-
-服务默认运行在 `http://localhost:3000`（或 `.env` 中配置的端口）
-
-## API Endpoints
-
-### 1. 查询广告列表
-
-```
-GET /ads
-```
-
-返回所有广告，按竞价（bid）降序排序
-
-**响应示例：**
-
-```json
-[
-  {
-    "id": "abc123",
-    "title": "广告标题",
-    "imageUrl": "https://example.com/image.jpg",
-    "landingUrl": "https://example.com",
-    "bid": 100,
-    "clicks": 5,
-    "createdAt": 1700000000000,
-    "updatedAt": 1700000000000
-  }
-]
-```
-
-### 2. 创建广告
-
-```
-POST /ads
-Content-Type: application/json
-```
-
-**请求体：**
-
-```json
-{
-  "title": "广告标题",
-  "imageUrl": "https://example.com/image.jpg",
-  "landingUrl": "https://example.com",
-  "bid": 100
-}
-```
-
-**校验规则：**
-
-- `title`: 必填，非空字符串
-- `imageUrl`: 必填，非空字符串
-- `landingUrl`: 必填，非空字符串
-- `bid`: 必填，数字类型，>= 0
-
-### 3. 编辑广告
-
-```
-PATCH /ads/:id
-Content-Type: application/json
-```
-
-**请求体（所有字段可选）：**
-
-```json
-{
-  "title": "新标题",
-  "imageUrl": "https://example.com/new-image.jpg",
-  "landingUrl": "https://example.com/new",
-  "bid": 150
-}
-```
-
-### 4. 删除广告
-
-```
-DELETE /ads/:id
-```
-
-**响应示例：**
-
-```json
-{
-  "success": true
-}
-```
-
-### 5. 点击广告（点击次数+1）
-
-```
-POST /ads/:id/click
-```
-
-**响应示例：**
-
-```json
-{
-  "id": "abc123",
-  "title": "广告标题",
-  "clicks": 6,
-  ...
-}
-```
-
-## Data Storage
-
-广告数据存储在项目根目录的 `data/ads.json` 文件中，首次运行时会自动创建。
-
-## Quick Test
-
-项目包含 `test-api.http` 文件，可使用 VS Code 的 REST Client 插件或其他 HTTP 客户端测试所有接口。
-
-**使用 curl 快速测试：**
-
-```bash
-# 1. 创建广告
-curl -X POST http://localhost:3001/ads \
-  -H "Content-Type: application/json" \
-  -d '{"title":"测试广告","imageUrl":"https://picsum.photos/400/300","landingUrl":"https://example.com","bid":100}'
-
-# 2. 查询列表
-curl http://localhost:3001/ads
-
-# 3. 点击广告 (替换 {id} 为实际ID)
-curl -X POST http://localhost:3001/ads/{id}/click
-
-# 4. 编辑广告 (替换 {id} 为实际ID)
-curl -X PATCH http://localhost:3001/ads/{id} \
-  -H "Content-Type: application/json" \
-  -d '{"bid":200}'
-
-# 5. 删除广告 (替换 {id} 为实际ID)
-curl -X DELETE http://localhost:3001/ads/{id}
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
